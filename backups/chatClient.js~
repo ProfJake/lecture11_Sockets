@@ -1,0 +1,78 @@
+
+var net = require('net');
+var rl = require('readline');
+
+var reader = rl.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+function timeStamp(){
+    let [hours, minutes, seconds] = new Date().toLocaleTimeString().slice(0,7).split(":");
+    let localH = (hours - 4)%12;
+    return (`${localH.toString().padStart(2,'0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2,'0')}`);
+}
+//this is the IP address of the class AWS server
+var client = net.createConnection({port:6900, host:'35.153.51.254'}, ()  => {
+    console.log("Connected to server");
+});
+ var tempStr = ' ';
+
+
+//When we receive data from the server
+client.on('data', data =>{
+
+    //We need to check to see there is data on our stdin stream
+    //if we leave it there, it will get mixed up into the console output
+    //(there's only one screen).
+    
+    let temp = reader.line;//store what's currently on the line.
+
+    if (temp.length > 0){
+	//if we don't clear the line then the data on input gets combined
+
+	//removes data
+	rl.clearLine(reader.input);
+	//resets the cursor
+	rl.cursorTo(reader.input, 0); 
+
+    }
+    //trim any whitespace, preventing users from entering blank lines
+    console.log(data.toString().trim());
+
+    
+    reader.prompt(true);  //prompting brings the line back
+
+});
+
+//print any error messages
+client.on('error', (err) =>{
+    console.log(`********Error: ${err.message}`);
+});
+
+//This event is emitted when a connection is closed by the server.
+//However at close, end events are also emitted (first). So functionally
+//this has the effect of being the message received by a user if they
+//try to log on to the server and its not up and running.
+client.on('close', ()=>{
+	console.log("The Chatroom has been shut down!");
+	process.exit(0);
+});
+//Runs when end is emitted by the connection.  When shut down by either the
+//user or server.
+client.on('end', ()=>{
+	console.log("You are offline:  Bye Bye!");
+	process.exit(0);
+});
+reader.on('data', (data)=>{
+    reader.prompt(trie
+ });
+reader.on('line', response =>{
+
+	if (response.toLowerCase() != "quit"){
+	    client.write(response);
+	} else {
+	    client.end();
+
+	}
+	
+});
